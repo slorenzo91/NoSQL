@@ -16,6 +16,8 @@ import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.gson.Gson;
+
 import java.io.*;
 import java.util.concurrent.ExecutionException;
 
@@ -65,6 +67,8 @@ public class MainController {
 		try {
 			for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {
 			  System.out.println(document.getData());
+			  String json = new Gson().toJson(document.getData());
+			  System.out.println(json);
 			}
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
