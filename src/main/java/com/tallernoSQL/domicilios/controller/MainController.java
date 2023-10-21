@@ -1,5 +1,7 @@
 package com.tallernoSQL.domicilios.controller;
 
+import com.tallernoSQL.clases.Domicilios;
+import com.tallernoSQL.clases.Personas;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +30,7 @@ import com.google.firebase.FirebaseOptions;
 public class MainController {
 	
 	@GetMapping("/domicilio/obtenerPorPersona/{idPersona}")
-	public String getAddress() {
+	public String getAddress(@PathVariable("idPersona") String idPersona) {
 		FileInputStream serviceAccount = null;
 		try {
 			serviceAccount = new FileInputStream("serviceAccountKey.json");
@@ -85,12 +87,12 @@ public class MainController {
 	}
 
 	@PostMapping("/domicilio/agregar")
-	public String createAddress() {
+	public String createAddress(@RequestBody Domicilios address) {
 		return "Agregar domicilio";
 	}
 
 	@PostMapping("/persona/agregar")
-	public String addPerson(){
+	public String addPerson(@RequestBody Personas persona){
 		return "Agregar persona";
 	}
 }
