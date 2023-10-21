@@ -1,9 +1,7 @@
 package com.tallernoSQL.domicilios.controller;
 
-import com.google.gson.JsonParser;
 import com.tallernoSQL.clases.Domicilios;
 import com.tallernoSQL.clases.Personas;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import com.google.api.core.ApiFuture;
@@ -13,11 +11,10 @@ import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.Query;
+import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import com.google.gson.Gson;
-import com.tallernoSQL.clases.Domicilios;
 
 import jakarta.annotation.PostConstruct;
 
@@ -27,12 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.firestore.Firestore;
-
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
 
 @RestController
 @RequestMapping("/nosql")
@@ -50,7 +41,7 @@ public class MainController {
                     .build();
 
             FirebaseApp.initializeApp(options);
-
+            //CREO UNA INSTANCIA DE FIRESTORE
             db = com.google.firebase.cloud.FirestoreClient.getFirestore();
 
         } catch (FileNotFoundException e) {
@@ -66,18 +57,19 @@ public class MainController {
 		DocumentReference referencePersona = db.collection("personas").document(idPersona);
 		
 		CollectionReference domicilios = db.collection("domicilios");
-		// Create a query against the collection.
+		// Creo una query donde la referencia tiene que ser igual a referencePersona
 		Query query = domicilios.whereEqualTo("referencePersona", referencePersona);
-		// retrieve  query results asynchronously using query.get()
+		// Obtengo los resultados de forma asincrona
 		ApiFuture<QuerySnapshot> querySnapshot = query.get();
 		
 		List<Domicilios> domiciliosList = new ArrayList<>();
 
 		try {
+			//A cada documento del resultado
             for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {
                 if (document.exists()) {
+                	//transformo el doc en objeto
                     Domicilios domicilio = document.toObject(Domicilios.class);
-                    System.out.println(domicilio);
                     domiciliosList.add(domicilio);
                 }
             }
@@ -92,15 +84,58 @@ public class MainController {
 		return domiciliosList;
 	}
 
-	@GetMapping("/domicilio/obtenerPorCriterio/{departamento}/{localidad}/{barrio}")
-	public List<Domicilios> getAddressByCriteria(@PathVariable String departamento,
-									   @PathVariable String localidad,
-									   @PathVariable String barrio){
+	///domicilio/obtenerPorCriterio?departamento=Montevideo
+	@GetMapping("/domicilio/obtenerPorCriterio")
+	public List<Domicilios> getAddressByCriteria(
+		 @RequestParam(required = false) String barrio,
+		 @RequestParam(required = false) String localidad,
+		 @RequestParam(required = false) String departamento){
+		
+		List<Domicilios> domiciliosList = new ArrayList<>();
+		
+	    try {
+	        Query domiciliosQuery = db.collection("domicilios");
 
-		List<Domicilios> domicilios = new ArrayList<>();
+	        // FILTROS
+	        if (barrio != null && !barrio.isEmpty()) {
+	            domiciliosQuery = domiciliosQuery.whereEqualTo("barrio", barrio);
+	        }
 
+	        if (localidad != null && !localidad.isEmpty()) {
+	            domiciliosQuery = domiciliosQuery.whereEqualTo("localidad", localidad);
+	        }
 
-		return domicilios;
+	        if (departamento != null && !departamento.isEmpty()) {
+	            domiciliosQuery = domiciliosQuery.whereEqualTo("departamento", departamento);
+	        }
+
+	        // Hacemos la query
+	        QuerySnapshot querySnapshot = domiciliosQuery.get().get();
+
+	        for (QueryDocumentSnapshot document : querySnapshot.getDocuments()) {
+	            
+	            // Transformo cada resultado en un objeto
+	            Domicilios domicilio = document.toObject(Domicilios.class);
+	            
+	            // Obtengo la referencia a "Persona"
+	            DocumentReference docRef = (DocumentReference) document.get("referencePersona");
+	            
+	            DocumentSnapshot docSnapshot;
+	            try {
+	                docSnapshot = docRef.get().get();
+	            } catch (InterruptedException | ExecutionException e) {
+	                e.printStackTrace();
+	                continue;
+	            }
+	            if (docSnapshot.exists()) {
+	                domicilio.setIdPersona(docSnapshot.getId());
+	                domiciliosList.add(domicilio);
+	            }
+	        }	
+        } catch (InterruptedException | ExecutionException e) {
+	        e.printStackTrace();
+	    }
+	    return domiciliosList;
 	}
 
 	@PostMapping("/domicilio/agregar")
@@ -110,7 +145,7 @@ public class MainController {
 		
 		 try {
 		        DocumentSnapshot docSnapshot = docRef.get().get();
-		        
+		        // Verifico que exista la persona con el Id indicado
 		        if (docSnapshot.exists()) {
 		        	 Map<String, Object> domicilioData = new HashMap<>();
 		             domicilioData.put("departamento", address.getDepartamento());
@@ -122,11 +157,11 @@ public class MainController {
 		             domicilioData.put("letra", address.getLetra());
 		             domicilioData.put("barrio", address.getBarrio());
 		             domicilioData.put("numero", address.getNumero());
-		             domicilioData.put("referencePersona", docRef); // Adding the reference here.
+		             domicilioData.put("referencePersona", docRef);
 
-		             // Create a new document in the "domicilios" collection.
+		             // Creo un nuevo documento con el map creado
 		             DocumentReference newDomicilioRef = db.collection("domicilios").document();
-		             newDomicilioRef.set(domicilioData).get(); // Writing the domicilio data with the reference.
+		             newDomicilioRef.set(domicilioData).get();
 
 		             return "Domicilio creado con referencia a la persona con CI: " + address.getIdPersona();
 		             
@@ -146,27 +181,23 @@ public class MainController {
 		
 		 try {
 		        DocumentSnapshot docSnapshot = docRef.get().get();
-		        
+		        // Verifico que no exista la persona
 		        if (docSnapshot.exists()) {
 		            return "Ya existe una persona con la CI:" + persona.getCI();
 		        }else {
-		    		// Create a map to store the values you want to set in the new document
 		    		Map<String, Object> docData = new HashMap<>();
 		    		docData.put("nombre", persona.getNombre());
 		    		docData.put("apellido", persona.getApellido());
 		    		docData.put("edad", persona.getEdad());
 
-		    		// Add a new document with a specific ID
+		    		// Agrego un nuevo documento con el Id y los datos
 		    		DocumentReference addedDocRef = db.collection("personas").document(persona.getCI());
-
-		    		// Use the set() method of the DocumentReference to save the data
 		    		try {
-		    			// Set the data for the specific document (overrides if already exists)
-		    			addedDocRef.set(docData).get();  // Using .get() to block on the future
-		    			return "Document added with ID: " + persona.getCI();
+		    			addedDocRef.set(docData).get();
+		    			return "Persona agregada con la CI: " + persona.getCI();
 		    		} catch (InterruptedException | ExecutionException e) {
 		    			e.printStackTrace();
-		    			return "Error adding document: " + e.getMessage();
+		    			return "Error agregando a la persona: " + e.getMessage();
 		    		}
 		        }	
 		 } catch (InterruptedException | ExecutionException e) {
