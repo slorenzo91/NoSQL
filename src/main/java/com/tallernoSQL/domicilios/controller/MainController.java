@@ -92,9 +92,15 @@ public class MainController {
 		return domiciliosList;
 	}
 
-	@GetMapping("/domicilio/obtenerPorCriterio/{idCriterio}")
-	public String getAddressByCriteria(){
-		return "Obtener por criterio";
+	@GetMapping("/domicilio/obtenerPorCriterio/{departamento}/{localidad}/{barrio}")
+	public List<Domicilios> getAddressByCriteria(@PathVariable String departamento,
+									   @PathVariable String localidad,
+									   @PathVariable String barrio){
+
+		List<Domicilios> domicilios = new ArrayList<>();
+
+
+		return domicilios;
 	}
 
 	@PostMapping("/domicilio/agregar")
