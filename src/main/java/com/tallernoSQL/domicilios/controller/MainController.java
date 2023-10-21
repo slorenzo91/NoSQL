@@ -62,8 +62,6 @@ public class MainController {
 	
 	@GetMapping("/domicilio/obtenerPorPersona/{idPersona}")
 	public List<Domicilios> getAddress(@PathVariable("idPersona") String idPersona) {
-
-		System.out.println(idPersona);
 		
 		DocumentReference referencePersona = db.collection("personas").document(idPersona);
 		
@@ -106,24 +104,38 @@ public class MainController {
 
 	@PostMapping("/persona/agregar")
 	public String addPerson(@RequestBody Personas persona) {
-		// Create a map to store the values you want to set in the new document
-		Map<String, Object> docData = new HashMap<>();
-		docData.put("nombre", persona.getNombre());
-		docData.put("apellido", persona.getApellido());
-		docData.put("edad", persona.getEdad());
+		
+		DocumentReference docRef = db.collection("personas").document(persona.getCI());
+		
+		 try {
+		        DocumentSnapshot docSnapshot = docRef.get().get();
+		        
+		        if (docSnapshot.exists()) {
+		            return "Ya existe una persona con la CI:" + persona.getCI();
+		        }else {
+		    		// Create a map to store the values you want to set in the new document
+		    		Map<String, Object> docData = new HashMap<>();
+		    		docData.put("nombre", persona.getNombre());
+		    		docData.put("apellido", persona.getApellido());
+		    		docData.put("edad", persona.getEdad());
 
-		// Add a new document with a specific ID
-		DocumentReference addedDocRef = db.collection("personas").document(persona.getCI());
+		    		// Add a new document with a specific ID
+		    		DocumentReference addedDocRef = db.collection("personas").document(persona.getCI());
 
-		// Use the set() method of the DocumentReference to save the data
-		try {
-			// Set the data for the specific document (overrides if already exists)
-			addedDocRef.set(docData).get();  // Using .get() to block on the future
-			return "Document added with ID: " + persona.getCI();
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-			return "Error adding document: " + e.getMessage();
-		}
+		    		// Use the set() method of the DocumentReference to save the data
+		    		try {
+		    			// Set the data for the specific document (overrides if already exists)
+		    			addedDocRef.set(docData).get();  // Using .get() to block on the future
+		    			return "Document added with ID: " + persona.getCI();
+		    		} catch (InterruptedException | ExecutionException e) {
+		    			e.printStackTrace();
+		    			return "Error adding document: " + e.getMessage();
+		    		}
+		        }	
+		 } catch (InterruptedException | ExecutionException e) {
+		        e.printStackTrace();
+		        return "Error: " + e.getMessage();
+		 }
 	}
 }
 	
