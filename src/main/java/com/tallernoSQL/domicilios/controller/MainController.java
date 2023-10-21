@@ -99,7 +99,38 @@ public class MainController {
 
 	@PostMapping("/domicilio/agregar")
 	public String createAddress(@RequestBody Domicilios address) {
-		return "Agregar domicilio";
+		
+		DocumentReference docRef = db.collection("personas").document(address.getIdPersona());
+		
+		 try {
+		        DocumentSnapshot docSnapshot = docRef.get().get();
+		        
+		        if (docSnapshot.exists()) {
+		        	 Map<String, Object> domicilioData = new HashMap<>();
+		             domicilioData.put("departamento", address.getDepartamento());
+		             domicilioData.put("localidad", address.getLocalidad());
+		             domicilioData.put("calle", address.getCalle());
+		             domicilioData.put("apartamento", address.getApartamento());
+		             domicilioData.put("padron", address.getPadron());
+		             domicilioData.put("ruta", address.getRuta());
+		             domicilioData.put("letra", address.getLetra());
+		             domicilioData.put("barrio", address.getBarrio());
+		             domicilioData.put("numero", address.getNumero());
+		             domicilioData.put("referencePersona", docRef); // Adding the reference here.
+
+		             // Create a new document in the "domicilios" collection.
+		             DocumentReference newDomicilioRef = db.collection("domicilios").document();
+		             newDomicilioRef.set(domicilioData).get(); // Writing the domicilio data with the reference.
+
+		             return "Domicilio creado con referencia a la persona con CI: " + address.getIdPersona();
+		             
+		        }else {
+		        	return "No existe una persona con la CI:" + address.getIdPersona();
+		        }	
+		 } catch (InterruptedException | ExecutionException e) {
+		        e.printStackTrace();
+		        return "Error: " + e.getMessage();
+		 }
 	}
 
 	@PostMapping("/persona/agregar")
