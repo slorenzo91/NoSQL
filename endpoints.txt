@@ -1,0 +1,8 @@
+Obtener domicilios por persona: GET -> localhost:8080/nosql/domicilio/obtenerPorPersona/1
+
+Obtener domicilios por criterio: GET -> localhost:8080/nosql/domicilio/obtenerPorCriterio/1
+
+Agregar domcilio: POST -> localhost:8080/nosql/domicilio/agregar
+
+Agregar persona: POST -> localhost:8080/nosql/persona/agregar
+

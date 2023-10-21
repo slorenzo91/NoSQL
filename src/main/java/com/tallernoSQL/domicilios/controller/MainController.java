@@ -18,6 +18,8 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.gson.Gson;
 
+import jakarta.annotation.PostConstruct;
+
 import java.io.*;
 import java.util.concurrent.ExecutionException;
 
@@ -30,34 +32,33 @@ import com.google.firebase.FirebaseOptions;
 @RestController
 @RequestMapping("/nosql")
 public class MainController {
+
+	private Firestore db;
+
+    @PostConstruct
+    public void init() {
+        FileInputStream serviceAccount = null;
+        try {
+            serviceAccount = new FileInputStream("serviceAccountKey.json");
+            FirebaseOptions options = new FirebaseOptions.Builder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .build();
+
+            FirebaseApp.initializeApp(options);
+
+            db = com.google.firebase.cloud.FirestoreClient.getFirestore();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 	
 	@GetMapping
 	public String getAddress() {
-		FileInputStream serviceAccount = null;
-		try {
-			serviceAccount = new FileInputStream("serviceAccountKey.json");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			FirebaseOptions options = new FirebaseOptions.Builder()
-			  .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-			  .build();
-			
-			FirebaseApp.initializeApp(options);
-			
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
-		
-		Firestore db = com.google.firebase.cloud.FirestoreClient.getFirestore();
-		
-		
-		// Create a reference to the cities collection
+		// Crear referencia a la coleccion de domicilios
 		CollectionReference domicilios = db.collection("domicilios");
 		// Create a query against the collection.
 		Query query = domicilios;
