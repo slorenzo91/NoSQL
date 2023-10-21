@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.CollectionReference;
+import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.Query;
@@ -13,10 +14,13 @@ import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.gson.Gson;
+import com.tallernoSQL.clases.Domicilios;
 
 import jakarta.annotation.PostConstruct;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import com.google.auth.oauth2.GoogleCredentials;
@@ -52,21 +56,28 @@ public class MainController {
     }
 	
 	@GetMapping("/domicilio/obtenerPorPersona/{idPersona}")
-	public String getAddress() {
+	public List<Domicilios> getAddress(@PathVariable("idPersona") String idPersona) {
 		
-		// Crear referencia a la coleccion de domicilios
+		System.out.println(idPersona);
+		
+		DocumentReference referencePersona = db.collection("personas").document(idPersona);
+		
 		CollectionReference domicilios = db.collection("domicilios");
 		// Create a query against the collection.
-		Query query = domicilios;
+		Query query = domicilios.whereEqualTo("referencePersona", referencePersona);
 		// retrieve  query results asynchronously using query.get()
 		ApiFuture<QuerySnapshot> querySnapshot = query.get();
+		
+		List<Domicilios> domiciliosList = new ArrayList<>();
 
 		try {
-			for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {
-			  System.out.println(document.getData());
-			  String json = new Gson().toJson(document.getData());
-			  System.out.println(json);
-			}
+            for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {
+                if (document.exists()) {
+                    Domicilios domicilio = document.toObject(Domicilios.class);
+                    System.out.println(domicilio);
+                    domiciliosList.add(domicilio);
+                }
+            }
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -75,9 +86,7 @@ public class MainController {
 			e.printStackTrace();
 		}
 		
-		
-		
-		return "Api rest responde ok :)";
+		return domiciliosList;
 	}
 
 	@GetMapping("/domicilio/obtenerPorCriterio/{idCriterio}")
