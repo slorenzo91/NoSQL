@@ -1,11 +1,7 @@
 package com.tallernoSQL.domicilios.controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -31,7 +27,7 @@ import com.google.firebase.FirebaseOptions;
 @RequestMapping("/nosql")
 public class MainController {
 	
-	@GetMapping
+	@GetMapping("/domicilio/obtenerPorPersona/{idPersona}")
 	public String getAddress() {
 		FileInputStream serviceAccount = null;
 		try {
@@ -82,10 +78,20 @@ public class MainController {
 		
 		return "Api rest responde ok :)";
 	}
-	
-	@PostMapping
-	public String createUser() {
-		return "Usuario creado OK";
+
+	@GetMapping("/domicilio/obtenerPorCriterio/{idCriterio}")
+	public String getAddressByCriteria(){
+		return "Obtener por criterio";
+	}
+
+	@PostMapping("/domicilio/agregar")
+	public String createAddress() {
+		return "Agregar domicilio";
+	}
+
+	@PostMapping("/persona/agregar")
+	public String addPerson(){
+		return "Agregar persona";
 	}
 }
 	
