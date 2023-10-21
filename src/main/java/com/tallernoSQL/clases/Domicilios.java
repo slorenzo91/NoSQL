@@ -2,6 +2,7 @@ package com.tallernoSQL.clases;
 
 public class Domicilios {
 
+    private String idPersona;
     private String departamento;
     private String localidad;
     private String calle;
@@ -12,6 +13,7 @@ public class Domicilios {
     private String barrio;
     private int numero;
 
+
     // Default constructor (needed for Firestore)
     public Domicilios() {
     }
@@ -21,6 +23,14 @@ public class Domicilios {
         this.departamento = departamento;
         this.calle = calle;
         this.numero = numero;
+    }
+
+    public String getIdPersona() {
+        return idPersona;
+    }
+
+    public void setIdPersona(String idPersona) {
+        this.idPersona = idPersona;
     }
 
     public String getDepartamento() {
