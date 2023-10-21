@@ -1,0 +1,132 @@
+{
+	"info": {
+		"_postman_id": "44ba160b-9a52-4fe9-9d26-908316ec2cd8",
+		"name": "NOSQL - DOMICILIOS",
+		"description": "Coleccion de endpoints para NOSQL.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27589111"
+	},
+	"item": [
+		{
+			"name": "getAddress",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/nosql/domicilio/obtenerPorPersona/{{idPersona}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"nosql",
+						"domicilio",
+						"obtenerPorPersona",
+						"{{idPersona}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAddressByCriteria",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/nosql/domicilio/obtenerPorCriterio?departamento={{departamentoValor}}&barrio={{barrioValor}}&localidad={{localidadValor}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"nosql",
+						"domicilio",
+						"obtenerPorCriterio"
+					],
+					"query": [
+						{
+							"key": "departamento",
+							"value": "{{departamentoValor}}"
+						},
+						{
+							"key": "barrio",
+							"value": "{{barrioValor}}"
+						},
+						{
+							"key": "localidad",
+							"value": "{{localidadValor}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addAddress",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"idPersona\": \"\",\r\n        \"departamento\": \"\",\r\n        \"localidad\": \"\",\r\n        \"calle\": \"\",\r\n        \"apartamento\": \"\",\r\n        \"padron\": \"\",\r\n        \"ruta\": \"\",\r\n        \"letra\": \"\",\r\n        \"barrio\": \"\",\r\n        \"numero\": ,\r\n    }"
+				},
+				"url": {
+					"raw": "localhost:8080/nosql/domicilio/agregar",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"nosql",
+						"domicilio",
+						"agregar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addPerson",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"ci\": \"\"\r\n    \"nombre\": \"\",\r\n    \"apellido\": \"\",\r\n    \"edad\": \"\"\r\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/nosql/persona/agregar",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"nosql",
+						"persona",
+						"agregar"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "idPersona",
+			"value": "idPersona"
+		},
+		{
+			"key": "departamentoValor",
+			"value": "valor"
+		},
+		{
+			"key": "barrioValor",
+			"value": "valor"
+		},
+		{
+			"key": "localidadValor",
+			"value": "valor"
+		}
+	]
+}
