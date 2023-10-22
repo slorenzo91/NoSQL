@@ -25,6 +25,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+//agrego imports para errores de servidor
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
 @RestController
 @RequestMapping("/nosql")
 public class MainController {
@@ -52,9 +61,19 @@ public class MainController {
     }
 	
 	@GetMapping("/domicilio/obtenerPorPersona/{idPersona}")
-	public List<Domicilios> getAddress(@PathVariable("idPersona") String idPersona) {
+	public ResponseEntity<?> getAddress(@PathVariable("idPersona") String idPersona) {
 		
 		DocumentReference referencePersona = db.collection("personas").document(idPersona);
+		
+		try {
+            DocumentSnapshot docSnapshot = referencePersona.get().get();
+            if (!docSnapshot.exists()) {
+                return ResponseEntity.status(402).body("No existe una persona con la cedula: " + idPersona);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error interno del servidor");
+        }
 		
 		CollectionReference domicilios = db.collection("domicilios");
 		// Creo una query donde la referencia tiene que ser igual a referencePersona
@@ -80,10 +99,9 @@ public class MainController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return domiciliosList;
+	    return ResponseEntity.ok(domiciliosList);
 	}
-
+    
 	///domicilio/obtenerPorCriterio?departamento=Montevideo
 	@GetMapping("/domicilio/obtenerPorCriterio")
 	public List<Domicilios> getAddressByCriteria(
@@ -139,7 +157,7 @@ public class MainController {
 	}
 
 	@PostMapping("/domicilio/agregar")
-	public String createAddress(@RequestBody Domicilios address) {
+	public ResponseEntity<String> createAddress(@RequestBody Domicilios address) {
 		
 		DocumentReference docRef = db.collection("personas").document(address.getIdPersona());
 		
@@ -162,20 +180,19 @@ public class MainController {
 		             // Creo un nuevo documento con el map creado
 		             DocumentReference newDomicilioRef = db.collection("domicilios").document();
 		             newDomicilioRef.set(domicilioData).get();
-
-		             return "Domicilio creado con referencia a la persona con CI: " + address.getIdPersona();
+			         return ResponseEntity.status(200).body("Domicilio creado con referencia a la persona con CI: " + address.getIdPersona());
 		             
 		        }else {
-		        	return "No existe una persona con la CI:" + address.getIdPersona();
+		        	return ResponseEntity.status(402).body("No existe una persona con la CI:" + address.getIdPersona());
 		        }	
 		 } catch (InterruptedException | ExecutionException e) {
 		        e.printStackTrace();
-		        return "Error: " + e.getMessage();
+    			return ResponseEntity.status(500).body("Error: " + e.getMessage());
 		 }
 	}
 
 	@PostMapping("/persona/agregar")
-	public String addPerson(@RequestBody Personas persona) {
+	public ResponseEntity<String> addPerson(@RequestBody Personas persona) {
 		
 		DocumentReference docRef = db.collection("personas").document(persona.getCI());
 		
@@ -183,7 +200,7 @@ public class MainController {
 		        DocumentSnapshot docSnapshot = docRef.get().get();
 		        // Verifico que no exista la persona
 		        if (docSnapshot.exists()) {
-		            return "Ya existe una persona con la CI:" + persona.getCI();
+		        	return ResponseEntity.status(401).body("Ya existe una persona con la CI:" + persona.getCI());
 		        }else {
 		    		Map<String, Object> docData = new HashMap<>();
 		    		docData.put("nombre", persona.getNombre());
@@ -194,15 +211,15 @@ public class MainController {
 		    		DocumentReference addedDocRef = db.collection("personas").document(persona.getCI());
 		    		try {
 		    			addedDocRef.set(docData).get();
-		    			return "Persona agregada con la CI: " + persona.getCI();
+		    			return ResponseEntity.status(200).body("Persona agregada con la CI: " + persona.getCI());
 		    		} catch (InterruptedException | ExecutionException e) {
 		    			e.printStackTrace();
-		    			return "Error agregando a la persona: " + e.getMessage();
+		    			return ResponseEntity.status(500).body("Error agregando a la persona: " + e.getMessage());
 		    		}
 		        }	
 		 } catch (InterruptedException | ExecutionException e) {
 		        e.printStackTrace();
-		        return "Error: " + e.getMessage();
+    			return ResponseEntity.status(500).body("Error: " + e.getMessage());
 		 }
 	}
 }

@@ -64,12 +64,23 @@
 		},
 		{
 			"name": "addAddress",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n        \"idPersona\": \"\",\r\n        \"departamento\": \"\",\r\n        \"localidad\": \"\",\r\n        \"calle\": \"\",\r\n        \"apartamento\": \"\",\r\n        \"padron\": \"\",\r\n        \"ruta\": \"\",\r\n        \"letra\": \"\",\r\n        \"barrio\": \"\",\r\n        \"numero\": ,\r\n    }"
+					"raw": "{\r\n        \"idPersona\": \"\",\r\n        \"departamento\": \"\",\r\n        \"localidad\": \"\",\r\n        \"calle\": \"\",\r\n        \"apartamento\": \"\",\r\n        \"padron\": \"\",\r\n        \"ruta\": \"\",\r\n        \"letra\": \"\",\r\n        \"barrio\": \"\",\r\n        \"numero\": 0\r\n    }"
 				},
 				"url": {
 					"raw": "localhost:8080/nosql/domicilio/agregar",
@@ -88,12 +99,23 @@
 		},
 		{
 			"name": "addPerson",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"ci\": \"\"\r\n    \"nombre\": \"\",\r\n    \"apellido\": \"\",\r\n    \"edad\": \"\"\r\n}"
+					"raw": "{\r\n    \"ci\": \"\",\r\n    \"nombre\": \"\",\r\n    \"apellido\": \"\",\r\n    \"edad\": 0\r\n}"
 				},
 				"url": {
 					"raw": "localhost:8080/nosql/persona/agregar",
