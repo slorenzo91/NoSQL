@@ -15,7 +15,7 @@ Segundo laboratorio del taller noSQL. El segundo laboratorio consiste en la impl
 - [Pedro Aldama](https://github.com/LordAmbush)
 - [Pablo Cristiani](https://github.com/pcristiani)
 - [Santiago Lorenzo](https://github.com/slorenzo91)
-- [Eduardo Allo](https://www.github.com/eduardoAllo)
+- [Eduardo Allo](https://github.com/LalloLallo)
 
 
 ## Intercambio de datos.
@@ -41,7 +41,7 @@ servicios rest.
 
 ## Instalacion y configuracion.
 
-- Instalar jdk17 de Java.
+- Instalar [JDK17](https://download.oracle.com/java/17/archive/jdk-17.0.9_windows-x64_bin.msi) de Java.
 - Clonar el repositorio de forma local.
 - Instalar [SpringTool suite](https://download.springsource.com/release/STS4/4.20.0.RELEASE/dist/e4.29/spring-tool-suite-4-4.20.0.RELEASE-e4.29.0-win32.win32.x86_64.self-extracting.jar). Luego de descargado el jar, descomprimirlo. Descomprimir content.zip. Ingresar a la carpeta sts-4.20.0.RELEASE y ejecutar SpringToolSuite4.exe.
 - Importar el proyecto clonado como maven project.
