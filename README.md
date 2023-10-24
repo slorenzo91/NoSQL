@@ -47,7 +47,10 @@ servicios rest.
 - Importar el proyecto clonado como maven project.
 - Correr el proyecto como SpringBootApp.
 
-
+### Docker
+- Instalar [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+- Hacer pull con el comando: **docker pull slorenzo91/domicilios**.
+- Dentro de Docker Desktop abrir **images** y luego le damos a run (elegir puerto 8080).
     
 ## Endpoints.
 
